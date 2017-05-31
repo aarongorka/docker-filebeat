@@ -51,7 +51,7 @@ if [ "$1" = 'filebeat' ] && [ -e ${DOCKER_SOCK} ]; then
   fi
 
   while true; do
-    CONTAINERS=$(curl --no-buffer -s -XGET --unix-socket ${DOCKER_SOCK} http://localhost/containers/json | selector)
+    CONTAINERS=$(curl --no-buffer -s -XGET --unix-socket ${DOCKER_SOCK} http://localhost/containers/json | selector | grep -v filebeat)
     for CONTAINER in $CONTAINERS; do
       if ! ls $CONTAINERS_DIR | grep -q $CONTAINER; then
         echo "Starting processing on ${CONTAINER}"
