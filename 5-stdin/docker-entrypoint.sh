@@ -10,6 +10,7 @@ if [ "$1" = 'filebeat' ] && [ -e ${DOCKER_SOCK} ]; then
 
   # https://docs.docker.com/engine/api/v1.25/
   processLogs() {
+    echo "Started process for $1"
     local CONTAINER=$1
     touch "$CONTAINERS_DIR/$CONTAINER"
     CONTAINER_NAME=$(curl --no-buffer -s -XGET --unix-socket ${DOCKER_SOCK} http://localhost/containers/$CONTAINER/json | jq -r .Name | sed 's@/@@')
@@ -49,6 +50,7 @@ if [ "$1" = 'filebeat' ] && [ -e ${DOCKER_SOCK} ]; then
     CONTAINERS=$(curl --no-buffer -s -XGET --unix-socket ${DOCKER_SOCK} http://localhost/containers/json | selector)
     for CONTAINER in $CONTAINERS; do
       if ! ls $CONTAINERS_DIR | grep -q $CONTAINER; then
+        echo "Starting processing on ${CONTAINER}"
         processLogs $CONTAINER &
       fi
     done
