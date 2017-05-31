@@ -18,7 +18,8 @@ if [ "$1" = 'filebeat' ] && [ -e ${DOCKER_SOCK} ]; then
     if [ ${NOMAD_API_URL} ]; then
       if echo "${CONTAINER_NAME}" | grep -q '^api-'; then
         echo "Acquiring metadata from Nomad about container..."
-        CONTAINER_NAME="$(curl --no-buffer -s "${NOMAD_API_URL}/v1/allocation/${CONTAINER_NAME}" | jq -r '. | {"Name"}[]')"
+        NOMAD_ID="$(echo "$CONTAINER_NAME" | sed 's/api-//g')"
+        CONTAINER_NAME="$(curl --no-buffer -s "${NOMAD_API_URL}/v1/allocation/${NOMAD_ID}" | jq -r '. | {"Name"}[]')"
         echo "Metadata acquired: ${CONTAINER_NAME}"
       fi
     fi
