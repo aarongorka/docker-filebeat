@@ -15,7 +15,7 @@ if [ "$1" = 'filebeat' ] && [ -e ${DOCKER_SOCK} ]; then
     touch "$CONTAINERS_DIR/$CONTAINER"
     CONTAINER_NAME=$(curl --no-buffer -s -XGET --unix-socket ${DOCKER_SOCK} http://localhost/containers/$CONTAINER/json | jq -r .Name | sed 's@/@@')
     echo "Processing $CONTAINER_NAME ..."
-    if echo "${CONTAINER_NAME}" | grep '^api-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+$' && [ "${NOMAD_API_URL}" ]; then
+    if echo "${CONTAINER_NAME}" | grep -P '^api-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+-[0-9a-z]+$' && [ "${NOMAD_API_URL}" ]; then
       echo "Acquiring metadata from Nomad about container..."
       CONTAINER_NAME="$(curl --no-buffer -s "${NOMAD_API_URL}/v1/allocation/${CONTAINER_NAME}" | jq -r '. | {"Name"}[]')"
     fi
